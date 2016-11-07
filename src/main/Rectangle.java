@@ -1,29 +1,26 @@
 package main;
 
 public class Rectangle {
-  private int m; // min children
-  private int M; // max children
-  
-  private int minx; private int miny; // min coordinate
-  private int maxx; private int maxy; // max coordinate
-  private Object data;
-  
-  protected int nc; // number of children
-  protected Rectangle[] children = new Rectangle[M];
+  public Object data;
+  public float minx; public float miny; // min coordinate
+  public float maxx; public float maxy; // max coordinate
 
-  public Rectangle(Object obj, int[] coords, int mval, int Mval) {
+  public Rectangle(Object obj, float minx, float miny, float maxx, float maxy) {
     data = obj;
-    minx = coords[0]; miny = coords[1];
-    maxx = coords[2]; maxy = coords[3];
-    m = mval; M = Mval;
+    this.minx = minx; this.miny = miny;
+    this.maxx = maxx; this.maxy = maxy;
   }
   
-  private int height() {
+  public float height() {
     return this.maxy - this.miny;
   }
   
-  private int width() {
+  public float width() {
     return this.maxx - this.minx;
+  }
+  
+  public Object getData() {
+    return data;
   }
 
   public boolean intersect(Rectangle other) {
@@ -34,27 +31,25 @@ public class Rectangle {
         this.miny < other.maxy;
   }
   
-  public static int[] computeMBR(Rectangle[] list) {
-    int[] mbr = {
-        list[0].minx, list[0].miny, 
-        list[0].maxx, list[0].maxy};
-    
+  public float area() {
+    return width()*height();
+  }
+  
+  public static Rectangle computeMBR(Rectangle... list) {
+    Rectangle mbr = new Rectangle(null,
+        list[0].minx, list[0].miny,
+        list[0].maxx, list[0].maxy);
+
     for (Rectangle r: list) {
-      if (r.minx < mbr[0]) mbr[0] = r.minx;
-      if (r.miny < mbr[1]) mbr[1] = r.miny;
-      if (r.maxx > mbr[2]) mbr[2] = r.maxx;
-      if (r.maxy > mbr[3]) mbr[3] = r.maxy;
+      if (r.minx < mbr.minx) mbr.minx = r.minx;
+      if (r.miny < mbr.miny) mbr.miny = r.miny;
+      if (r.maxx > mbr.maxx) mbr.maxx = r.maxx;
+      if (r.maxy > mbr.maxy) mbr.maxy = r.maxy;
     }
     return mbr;
   }
   
-  private void updateMBR() {
-    int[] mbr = computeMBR(this.children);
-    this.minx = mbr[0]; this.miny = mbr[1];
-    this.maxx = mbr[2]; this.maxy = mbr[3];
-  }
-  
-  public String show() {
+  public String toString() {
     return 
         "(" + this.minx + ", " + this.miny + ") : " +
         "(" + this.maxx + ", " + this.maxy + ")";
