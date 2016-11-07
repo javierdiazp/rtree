@@ -1,6 +1,8 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -241,18 +243,54 @@ public class RTree {
     float distX = (maxX - minX)/node.box.width();
     float distY = (maxY - minY)/node.box.height();
     
-    // split nodes
+    // sort nodes by axis
     Node[] nodes = new Node[2];
-    int i1, i2, cut; // cut -> x == 0; y == 1;
+    List<Node> list = new ArrayList<Node>();
     if (distX > distY) {
-      cut = 0;
-      i1 = left; i2 = right;
+      nodes[0] = new Node(node.children[left].box, m, M);
+      nodes[1] = new Node(node.children[right].box, m, M);
+      for (int i = 0; i < node.n; i++) {
+        if (i != left && i != right) {
+          list.add(node.children[i]);
+        }
+      }
+      Collections.sort(list, new Comparator<Node>() {
+        public int compare(Node n1, Node n2) {
+          return Float.compare(n1.box.miny, n2.box.miny);
+        }
+      });
     }
     else {
-      cut = 1;
-      i1 = down; i2 = up;
+      nodes[0] = new Node(node.children[down].box, m, M);
+      nodes[1] = new Node(node.children[up].box, m, M);
+      for (int i = 0; i < node.n; i++) {
+        if (i != down && i != up) {
+          list.add(node.children[i]);
+        }
+      }
+      Collections.sort(list, new Comparator<Node>() {
+        public int compare(Node n1, Node n2) {
+          return Float.compare(n1.box.minx, n2.box.minx);
+        }
+      });
     }
-    //TODO: ultima parte del greene split
+    
+    // split nodes
+    
+    int half = node.M/2 - 1;
+    for (int i = 0; i < half; i++) {
+      Node ch = list.get(i);
+      Rectangle r = Rectangle.computeMBR(nodes[0].box, ch.box);
+      nodes[0].children[node.n++] = ch;
+      nodes[0].box = r;
+      
+    }
+    for (int i = half; i < node.n; i++) {
+      Node ch = list.get(i);
+      Rectangle r = Rectangle.computeMBR(nodes[1].box, ch.box);
+      nodes[1].children[node.n++] = ch;
+      nodes[1].box = r;
+    }
     return nodes;
   }
 } 
