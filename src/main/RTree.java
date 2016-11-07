@@ -78,7 +78,7 @@ public class RTree {
 
   private void doInsert(Rectangle c, Node currNode) {
     if (currNode.children[0].isLeaf()) {
-      // children are leafs
+      // children are leaves
       currNode.children[currNode.n++] = new Node(c, 0, 0);
     }
     else {
