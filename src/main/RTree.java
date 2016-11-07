@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
 public class RTree {
   public static final int LINEAR = 0;
   public static final int GREENE = 1;
