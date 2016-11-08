@@ -1,0 +1,34 @@
+MACHINE FEATURES
+
+Processor: Intel Core i3-4005U 1.70 GHz
+Operative system: Windows 10 Home Single Language
+Programming language: Java
+Compiler: javac.exe
+Environment: jre1.8.0_66
+RAM: 4.00 GB
+
+
+PARAMETERS OF THE EXPERIMENT
+
+Number of samples: 16
+Randomly generated rectangles with:
+  (xmin, ymin) in range [0, 500000.0]
+  (width, height) in range [1, 100.0]
+
+
+RESULTS: LINEARSPLIT
+
+Construction time: 16 ms
+Disk Memory Size: 65536 bytes
+Real Disk Usage: 47.5%
+Search average time: 0 ms
+Search average acceses: 2
+
+
+RESULTS: GREENESPLIT
+
+Construction time: 0 ms
+Disk Memory Size: 65536 bytes
+Real Disk Usage: 53.33%
+Search average time: 0 ms
+Search average acceses: 3

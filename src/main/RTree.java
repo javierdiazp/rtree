@@ -10,21 +10,24 @@ public class RTree {
   public static final int LINEAR = 0;
   public static final int GREENE = 1;
 
-  private static final int m = 10; // min children per rectangle
-  private static final int M = 1000; // max children per rectangle
+  private static final int m = 4; // min children per rectangle
+  private static final int M = 10; // max children per rectangle
 
   public Node root;
   public int size; // number of elements in the tree
   public int type;
+  
+  public int accesses = 0; // paremeter for experimental purposes
 
   public RTree(int t) throws Exception {
-    if (t != 0 || t != 1) throw new IllegalArgumentException();
+    if (t != 0 && t != 1) throw new IllegalArgumentException();
     root = null;
     size = 0;
     type = t;
   }
 
   public Rectangle[] search(Rectangle c) { 
+    accesses = 0;
     List<Rectangle> list = doSearch(c, root);
     Rectangle[] array = new Rectangle[list.size()];
     array = list.toArray(array);
@@ -32,6 +35,7 @@ public class RTree {
   }
 
   private List<Rectangle> doSearch(Rectangle c, Node currNode) {
+    accesses += 1;
     List<Rectangle> ans = new ArrayList<Rectangle>();
     if (currNode.isLeaf()) {
       // a leaf
@@ -65,8 +69,8 @@ public class RTree {
       Rectangle r = Rectangle.computeMBR(root.box, c);
       root = new Node(r, 2, M);
       root.isRoot = true;
-      root.children[0] = aux;
-      root.children[1] = new Node(c, 0, 0);
+      root.children[root.n++] = aux;
+      root.children[root.n++] = new Node(c, 0, 0);
     }
 
     // caso size > 1
@@ -150,16 +154,20 @@ public class RTree {
       Rectangle auxRect = Rectangle.computeMBR(newN[0].box, newN[1].box);
       root = new Node(auxRect, 2, M);
       root.isRoot = true;
-      root.children[0] = newN[0];
-      root.children[1] = newN[1];
+      root.children[root.n++] = newN[0];
+      root.children[root.n++] = newN[1];
     }
   }
 
   private Node[] split(Node node) {
     Node[] ans = new Node[2];
     switch (type) {
-      case LINEAR: ans = linearSplit(node);
-      case GREENE: ans = greeneSplit(node);
+      case LINEAR: 
+        ans = linearSplit(node);
+        break;
+      case GREENE: 
+        ans = greeneSplit(node);
+        break;
     }
     return ans;
   }
@@ -195,8 +203,8 @@ public class RTree {
     }
     nodes[0] = new Node(node.children[i1].box, m, M);
     nodes[1] = new Node(node.children[i2].box, m, M);
-    nodes[0].children[node.n++] = node.children[i1];
-    nodes[1].children[node.n++] = node.children[i2];
+    nodes[0].children[nodes[0].n++] = node.children[i1];
+    nodes[1].children[nodes[1].n++] = node.children[i2];
     
     for (int i = 0; i < node.n; i++) {
       if (i != i1 && i != i2) {
@@ -206,11 +214,11 @@ public class RTree {
         float growth0 = r0.area() - nodes[0].box.area();
         float growth1 = r1.area() - nodes[1].box.area();
         if (growth0 < growth1) {
-          nodes[0].children[node.n++] = ch;
+          nodes[0].children[nodes[0].n++] = ch;
           nodes[0].box = r0;
         }
         else {
-          nodes[1].children[node.n++] = ch;
+          nodes[1].children[nodes[1].n++] = ch;
           nodes[1].box = r1;
         }
       }
@@ -219,6 +227,10 @@ public class RTree {
     while (nodes[0].n < nodes[0].m) {
       nodes[0].children[nodes[0].n++] = nodes[1].children[nodes[1].n-1];
       nodes[1].children[nodes[1].n---1] = null; 
+    }
+    while (nodes[1].n < nodes[1].m) {
+      nodes[1].children[nodes[1].n++] = nodes[0].children[nodes[0].n-1];
+      nodes[0].children[nodes[0].n---1] = null; 
     }
     return nodes;
   }
@@ -276,21 +288,25 @@ public class RTree {
     }
     
     // split nodes
-    
     int half = node.M/2 - 1;
     for (int i = 0; i < half; i++) {
       Node ch = list.get(i);
       Rectangle r = Rectangle.computeMBR(nodes[0].box, ch.box);
-      nodes[0].children[node.n++] = ch;
+      nodes[0].children[nodes[0].n++] = ch;
       nodes[0].box = r;
       
     }
-    for (int i = half; i < node.n; i++) {
+    for (int i = half; i < node.n-2; i++) {
       Node ch = list.get(i);
       Rectangle r = Rectangle.computeMBR(nodes[1].box, ch.box);
-      nodes[1].children[node.n++] = ch;
+      nodes[1].children[nodes[1].n++] = ch;
       nodes[1].box = r;
     }
     return nodes;
+  }
+  
+  public String toString() {
+    if (root == null) return "null";
+    return root.toString();
   }
 } 

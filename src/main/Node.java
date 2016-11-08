@@ -34,4 +34,20 @@ public class Node {
     children = other.children;
     isRoot = other.isRoot;
   }
+  
+  public String toString() {
+    return buildString(0);
+  }
+  
+  private String buildString(int lvl) {
+    StringBuilder str = new StringBuilder();
+    for (int i = 0; i < lvl; i++) {
+      str.append("  ");
+    }
+    str.append(lvl + ". " + box.toString());
+    for (int i = 0; i < n; i++) {
+      str.append("\n" + children[i].buildString(lvl+1));
+    }
+    return str.toString();
+  }
 }

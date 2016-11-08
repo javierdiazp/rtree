@@ -1,6 +1,7 @@
 package main;
 
 public class Rectangle {
+
   public Object data;
   public float minx; public float miny; // min coordinate
   public float maxx; public float maxy; // max coordinate
@@ -50,8 +51,10 @@ public class Rectangle {
   }
   
   public String toString() {
+
     return 
-        "(" + this.minx + ", " + this.miny + ") : " +
-        "(" + this.maxx + ", " + this.maxy + ")";
+        "Rectangle(" +
+        this.minx + ", " + this.miny + ", " +
+        this.maxx + ", " + this.maxy + ")";
   }
 }
